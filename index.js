@@ -5,18 +5,13 @@ module.exports = class Prometheus{
   constructor(settings){
     this.settings = settings;
 
-    if(!this.settings.app){ throw new Error('Missing express server'); }
+    if(!this.settings.express){ throw new Error('Missing express server : app'); }
 
-    this.prefix   = settings.prefix ? `${settings.prefix}_` : '';
-    this.app      = settings.app;
-    this.socketIo = settings.socketIo;
-    this.endpoint = settings.endpoint || '/metrics';
-
-    Client.collectDefaultMetrics({ prefix : this.prefix });
+    Client.collectDefaultMetrics();
 
     // Load strategies
-    require('./strategies/express')(this);
-    require('./strategies/socketIO')(this);
+    require('./strategies/express')(this.settings.express);
+    require('./strategies/socketIO')(this.settings.socketIo);
   }
 
 };

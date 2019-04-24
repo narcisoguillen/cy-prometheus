@@ -20,18 +20,15 @@ let responses = new Summary({
   labelNames : ['method', 'path', 'status']
 });
 
-module.exports = function(prometheus){
+let responseTime = ResponseTime(function(req, res, time){
+  responses.labels(req.method, req.url, res.statusCode).observe(time);
+});
 
-  let responseTime = ResponseTime(function(req, res, time){
-    responses.labels(req.method, req.url, res.statusCode).observe(time);
-  });
+module.exports = function(req, res, next){
+  if(req.path === '/metrics'){ return next(); }
 
-  return function(req, res, next){
-    if(req.path === prometheus.endpoint){ return next(); }
+  numOfRequests.inc({ method: req.method });
+  pathsTaken.inc({ path: req.path });
 
-    numOfRequests.inc({ method: req.method });
-    pathsTaken.inc({ path: req.path });
-
-    return responseTime(req, res, next);
-  };
+  return responseTime(req, res, next);
 };

@@ -1,6 +1,6 @@
-module.exports = function(prometheus){
-  if(!prometheus.socketIo){ return false; } // nothing to do
+module.exports = function(io){
+  if(!io){ return false; } // nothing to do
 
-  prometheus.socketIo.on('connection', require('./events/connection'));
-  prometheus.socketIo.use(require('./handshakes'));
+  io.on('connection', require('./events/connection'));
+  io.use(require('./handshakes'));
 };
